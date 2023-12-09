@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from model import Model
+from agent.model import Model
 
 
 class Agent:
