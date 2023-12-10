@@ -28,11 +28,11 @@ class Agent:
 
     def init_memory(self):
         # Initialize memory
-        mem = {'state_memory': np.zeros((self.max_mem_size, *self.input_dims)),
-               'new_state_memory': np.zeros((self.max_mem_size, *self.input_dims)),
+        mem = {'state_memory': np.zeros((self.max_mem_size, self.input_dims)),
+               'new_state_memory': np.zeros((self.max_mem_size, self.input_dims)),
                'action_memory': np.zeros(self.max_mem_size, dtype=np.int32),
                'reward_memory': np.zeros(self.max_mem_size),
-               'terminal_memory': np.zeros(self.max_mem_size, dtype=np.bool)}
+               'terminal_memory': np.zeros(self.max_mem_size, dtype=np.bool_)}
         return mem
 
     def store_transition(self, state, action, reward, state_, done):

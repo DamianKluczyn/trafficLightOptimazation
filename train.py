@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import traci
 from sumolib import checkBinary
-from utils.sumo_utils import get_vehicle_numbers, get_waiting_time, phaseDuration
+from utils.sumo_utils import get_vehicle_numbers, get_waiting_time, phase_duration
 from agent.agent import Agent
 
 
@@ -28,15 +28,17 @@ def run_simulation(total_episodes=100, steps_per_episode=1000):
     Main function to run the SUMO simulation and train the agent.
     """
     # Initialize SUMO
-    traci.start([checkBinary("sumo-gui"), "-c", "path/to/your/config.sumocfg"])
+    traci.start([checkBinary("sumo"), "-c", "configuration.sumocfg", "--tripinfo-output", "maps/tripinfo.xml"])
 
     # Initialize the agent
-    agent = Agent(gamma=0.99, epsilon=1.0, lr=0.001, input_dims=[4], batch_size=32, n_actions=4)
+    agent = Agent(gamma=0.99, epsilon=1.0, lr=0.001, input_dims=8, batch_size=32, n_actions=4)
     total_waiting_times = []  # List to store total waiting time for each episode
+
+    controlled_lanes = list(set(traci.trafficlight.getControlledLanes("J0")))
 
     # Main loop for training
     for episode in range(total_episodes):
-        traci.load(["-c", "path/to/your/config.sumocfg"])
+        traci.load(["-c", "configuration.sumocfg"])
         state = initialize_state()
         total_waiting_time = 0
 
@@ -49,7 +51,7 @@ def run_simulation(total_episodes=100, steps_per_episode=1000):
             agent.store_transition(state, action, reward, new_state, done)
             agent.learn()
             state = new_state
-            total_waiting_time += get_waiting_time(state)  # Update total waiting time
+            total_waiting_time += get_waiting_time(controlled_lanes)  # Update total waiting time
 
         total_waiting_times.append(total_waiting_time)  # Store the total waiting time for this episode
 
@@ -70,14 +72,13 @@ def run_simulation(total_episodes=100, steps_per_episode=1000):
 def initialize_state():
     """
     Initialize the state for the agent based on the SUMO environment.
-    The state could include information like the number of cars on each lane, waiting times, etc.
     """
-    controlled_lanes = traci.trafficlight.getControlledLanes("junctionID")  # Adjust "junctionID" as needed
+    controlled_lanes = list(set(traci.trafficlight.getControlledLanes("J0")))
     state = get_vehicle_numbers(controlled_lanes)
     return state
 
 
-def apply_action_to_sumo(action, junction_id="junctionID"):
+def apply_action_to_sumo(action, junction_id="J0"):
     """
     Apply the chosen action to the SUMO environment.
     Incorporates a yellow light phase to ensure safe transitions between light states.
@@ -106,9 +107,8 @@ def apply_action_to_sumo(action, junction_id="junctionID"):
 def get_new_state_from_sumo():
     """
     Get the new state from the SUMO environment after applying an action.
-    This could include updated vehicle counts and waiting times.
     """
-    controlled_lanes = traci.trafficlight.getControlledLanes("junctionID")
+    controlled_lanes = list(set(traci.trafficlight.getControlledLanes("J0")))
     new_state = get_vehicle_numbers(controlled_lanes)
     return new_state
 
@@ -118,8 +118,8 @@ def calculate_reward(old_state, new_state):
     Calculate the reward based on the old and new state.
     A simple reward function could be based on the reduction of waiting times.
     """
-    old_waiting_time = sum(old_state.values())
-    new_waiting_time = sum(new_state.values())
+    old_waiting_time = sum(old_state)
+    new_waiting_time = sum(new_state)
     reward = old_waiting_time - new_waiting_time  # Reward is positive if waiting time is reduced
     return reward
 

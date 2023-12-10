@@ -3,13 +3,16 @@ import traci
 
 def get_vehicle_numbers(lanes):
     """
-    Counts the number of vehicles on each lane.
+    Counts the number of vehicles on each lane and returns it as a list.
     :param lanes: List of lane IDs
-    :return: Dictionary with lane IDs as keys and vehicle counts as values
+    :return: List with vehicle counts for each lane
     """
-    vehicle_per_lane = {lane: traci.lane.getLastStepVehicleNumber(lane) for lane in lanes}
-    return vehicle_per_lane
-
+    relevant_lanes = ["-E3_0", "-E3_1", "-E0_0", "-E0_1", "-E1_0", "-E1_1", "-E2_0", "-E2_1"]
+    vehicle_counts = []
+    for lane in lanes:
+        if lane in relevant_lanes and lane not in vehicle_counts:
+            vehicle_counts.append(traci.lane.getLastStepVehicleNumber(lane))
+    return vehicle_counts
 
 def get_waiting_time(lanes):
     """
@@ -21,7 +24,7 @@ def get_waiting_time(lanes):
     return waiting_time
 
 
-def phaseDuration(junction, phase_time, phase_state):
+def phase_duration(junction, phase_time, phase_state):
     """
     Sets the traffic light phase for a given junction.
     :param junction: Junction ID
