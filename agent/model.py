@@ -12,6 +12,9 @@ class Model(nn.Module):
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         # Define the final layer that will output the action values
         self.fc3 = nn.Linear(fc2_dims, n_actions)
+        # Define the device
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.to(self.device)
 
     def forward(self, state):
         # Pass the state through the first layer and apply ReLU activation
