@@ -4,7 +4,7 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
 
     <input>
-        <sumocfg-file value="C:\Users\Kluczyn\PycharmProjects\trafficLightOptimazation\maps\map1.sumocfg"/>
+        <sumocfg-file value="C:\Users\Kluczyn\PycharmProjects\trafficLightOptimazation\configuration.sumocfg"/>
         <sumo-net-file value="C:\Users\Kluczyn\PycharmProjects\trafficLightOptimazation\maps\map1.net.xml"/>
     </input>
 
