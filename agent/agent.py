@@ -48,8 +48,8 @@ class Agent:
 
     def choose_action(self, observation):
         # Choose an action based on the current policy
+        state = torch.tensor([observation], dtype=torch.float).to(self.Q_eval.device)
         if np.random.random() > self.epsilon:
-            state = torch.tensor([observation], dtype=torch.float).to(self.Q_eval.device)
             actions = self.Q_eval.forward(state)
             action = torch.argmax(actions).item()
         else:

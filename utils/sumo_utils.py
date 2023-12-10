@@ -10,8 +10,8 @@ def get_vehicle_numbers(lanes):
     vehicle_per_lane = dict()
     for lane in lanes:
         vehicle_per_lane[lane] = 0
-        for k in traci.lane.getLastStepVehicleIDs(lane):
-            if traci.vehicle.getLanePosition(k) > 10:
+        for id in traci.lane.getLastStepVehicleIDs(lane):
+            if traci.vehicle.getLanePosition(id) > 10:
                 vehicle_per_lane[lane] += 1
     return vehicle_per_lane
 
@@ -22,7 +22,9 @@ def get_waiting_time(lanes):
     :param lanes: List of lane IDs
     :return: Total waiting time for all vehicles on the lanes
     """
-    waiting_time = sum(traci.lane.getWaitingTime(lane) for lane in lanes)
+    waiting_time = 0
+    for lane in lanes:
+        waiting_time += traci.lane.getWaitingTime(lane)
     return waiting_time
 
 
