@@ -7,12 +7,14 @@ def get_vehicle_numbers(lanes):
     :param lanes: List of lane IDs
     :return: List with vehicle counts for each lane
     """
-    relevant_lanes = ["-E3_0", "-E3_1", "-E0_0", "-E0_1", "-E1_0", "-E1_1", "-E2_0", "-E2_1"]
-    vehicle_counts = []
+    vehicle_per_lane = dict()
     for lane in lanes:
-        if lane in relevant_lanes and lane not in vehicle_counts:
-            vehicle_counts.append(traci.lane.getLastStepVehicleNumber(lane))
-    return vehicle_counts
+        vehicle_per_lane[lane] = 0
+        for k in traci.lane.getLastStepVehicleIDs(lane):
+            if traci.vehicle.getLanePosition(k) > 10:
+                vehicle_per_lane[lane] += 1
+    return vehicle_per_lane
+
 
 def get_waiting_time(lanes):
     """
