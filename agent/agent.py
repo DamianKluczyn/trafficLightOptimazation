@@ -24,7 +24,6 @@ class Agent:
         self.action_space = [i for i in range(n_actions)]  # action space
         self.mem_counter = 0  # memory counter
         self.iter_counter = 0  # iteration counter
-        self.replace_target = 100
         self.memory = self.init_memory(junctions)  # initializing memory
 
         self.Q_eval = Model(self.lr, self.input_dims, self.fc1_dims, self.fc2_dims,

@@ -1,13 +1,13 @@
 import os
 import sys
-import optparse
 import torch
 import numpy as np
-import matplotlib.pyplot as plt
 import traci
 from sumolib import checkBinary
 from utils.sumo_utils import get_vehicle_numbers, get_waiting_time, phase_duration
 from agent.agent import Agent
+import utils.save_plot as plt
+import utils.parser as pars
 
 
 if "SUMO_HOME" in os.environ:
@@ -23,7 +23,7 @@ yellow_phase = {...}  # Dictionary mapping each phase to its corresponding yello
 all_phases = {...}    # Dictionary of all traffic light phases including yellow
 
 
-def run_simulation(total_episodes=100, steps_per_episode=1000):
+def run_simulation(train=True, model="model", epochs=100, steps=1000):
     """
     Main function to run the SUMO simulation and train the agent.
     """
@@ -31,98 +31,98 @@ def run_simulation(total_episodes=100, steps_per_episode=1000):
     traci.start([checkBinary("sumo"), "-c", "configuration.sumocfg", "--tripinfo-output", "maps/tripinfo.xml"])
 
     # Initialize the agent
-    agent = Agent(gamma=0.99, epsilon=1.0, lr=0.001, input_dims=8, batch_size=32, n_actions=4)
-    total_waiting_times = []  # List to store total waiting time for each episode
-
-    controlled_lanes = list(set(traci.trafficlight.getControlledLanes("J0")))
+    all_junctions = traci.trafficlight.getIDList()
+    junction_numbers = list(range(len(all_junctions)))
+    agent = Agent(gamma=0.99, epsilon=0.0, lr=0.001, input_dims=8, fc1_dims=256, fc2_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
+    total_waiting_times = list()  # List to store total waiting time for each episode
+    best_time = np.inf
 
     # Main loop for training
-    for episode in range(total_episodes):
-        traci.load(["-c", "configuration.sumocfg"])
-        state = initialize_state()
-        total_waiting_time = 0
+    if not train:
+        agent.Q_eval.load_state_dict(torch.load(f'models/{model}.bin', map_location=agent.Q_eval.device))
 
-        for step in range(steps_per_episode):
-            action = agent.choose_action(state)
-            apply_action_to_sumo(action)
-            new_state = get_new_state_from_sumo()
-            reward = calculate_reward(state, new_state)
-            done = False  # Define your termination condition here
-            agent.store_transition(state, action, reward, new_state, done)
-            agent.learn()
-            state = new_state
-            total_waiting_time += get_waiting_time(controlled_lanes)  # Update total waiting time
-
-        total_waiting_times.append(total_waiting_time)  # Store the total waiting time for this episode
-
-        # Save the model after each episode
-        torch.save(agent.Q_eval.state_dict(), f'models/model_ep{episode}.pth')
-
-        # Generate plots after each episode
-        plt.plot(total_waiting_times)
-        plt.xlabel('Episodes')
-        plt.ylabel('Total Waiting Time')
-        plt.title('Waiting Time Over Episodes')
-        plt.savefig(f'plots/waiting_time_ep{episode}.png')
-        plt.close()
-
+    print(agent.Q_eval.device)
     traci.close()
+    for episode in range(epochs):
+        if train:
+            traci.start([checkBinary("sumo"), "-c", "configuration.sumocfg", "--tripinfo-output", "tripinfo.xml"])
+        else:
+            traci.start([checkBinary("sumo-gui"), "-c", "configuration.sumocfg", "--tripinfo-output", "tripinfo.xml"])
 
+        print(f'epoch: {episode}')
 
-def initialize_state():
-    """
-    Initialize the state for the agent based on the SUMO environment.
-    """
-    controlled_lanes = list(set(traci.trafficlight.getControlledLanes("J0")))
-    state = get_vehicle_numbers(controlled_lanes)
-    return state
+        select_lane = [
+            ["YYYYrrrrrrrrrrrr", "GGGGrrrrrrrrrrrr"],
+            ["rrrrYYYYrrrrrrrr", "rrrrGGGGrrrrrrrr"],
+            ["rrrrrrrrYYYYrrrr", "rrrrrrrrGGGGrrrr"],
+            ["rrrrrrrrrrrrYYYY", "rrrrrrrrrrrrGGGG"],
+        ]
 
+        step = 0
+        total_time = 0
+        min_duration = 5
+        traffic_lights_time = dict()
+        prev_wait_time = dict()
+        prev_vehicle_per_lane = dict()
+        prev_action = dict()
+        all_lanes = list()
 
-def apply_action_to_sumo(action, junction_id="J0"):
-    """
-    Apply the chosen action to the SUMO environment.
-    Incorporates a yellow light phase to ensure safe transitions between light states.
-    """
-    global last_action_time, current_phase, yellow_phase
+        for junction_number, junction in enumerate(all_junctions):
+            traffic_lights_time[junction] = 0
+            prev_wait_time[junction] = 0
+            prev_vehicle_per_lane[junction_number] = 0
+            prev_action[junction_number] = 0
+            all_lanes.extend(list(traci.trafficlight.getControlledLanes(junction)))
 
-    # Define the duration of yellow lights
-    yellow_duration = 2
+        while step <= steps:
+            traci.simulationStep()
+            for junction_number, junction in enumerate(all_junctions):
+                controlled_lanes = traci.trafficlight.getControlledLanes(junction)
+                waiting_time = get_waiting_time(controlled_lanes)
+                total_time += waiting_time
+                if traffic_lights_time[junction] == 0:
+                    vehicles_per_lane = get_vehicle_numbers(controlled_lanes)
 
-    # Check if it's safe to change the lights (i.e., not in a yellow phase)
-    if traci.simulation.getTime() - last_action_time > yellow_duration:
-        if action != current_phase:
-            # Set yellow phase
-            traci.trafficlight.setRedYellowGreenState(junction_id, yellow_phase[current_phase])
-            traci.trafficlight.setPhaseDuration(junction_id, yellow_duration)
-            last_action_time = traci.simulation.getTime()
+                    # Store previous state and current state
+                    state = prev_vehicle_per_lane[junction_number]
+                    state_ = list(vehicles_per_lane.values())
+                    reward = waiting_time * -1
+                    prev_vehicle_per_lane[junction_number] = state_
+                    agent.store_transition(state, state_, prev_action[junction_number], reward, (step == steps), junction_number)
 
-            # Schedule the next phase after yellow
-            traci.trafficlight.setRedYellowGreenState(junction_id, all_phases[action])
-            current_phase = action
-    else:
-        # If it's still yellow, extend the yellow phase
-        traci.trafficlight.setPhaseDuration(junction_id, yellow_duration - (traci.simulation.getTime() - last_action_time))
+                    # Select new action
+                    lane = agent.choose_action(state_)
+                    prev_action[junction_number] = lane
+                    phase_duration(junction, 6, select_lane[lane][0])
+                    phase_duration(junction, min_duration + 10, select_lane[lane][1])
 
+                    traffic_lights_time[junction] = min_duration + 10
 
-def get_new_state_from_sumo():
-    """
-    Get the new state from the SUMO environment after applying an action.
-    """
-    controlled_lanes = list(set(traci.trafficlight.getControlledLanes("J0")))
-    new_state = get_vehicle_numbers(controlled_lanes)
-    return new_state
+                    if train:
+                        agent.learn(junction_number)
+                else:
+                    traffic_lights_time[junction_number] -= 1
+            step += 1
+        print("total waiting time: ", total_time)
+        total_waiting_times.append(total_time)
 
+        if total_time < best_time:
+            best_time = total_time
+            if train:
+                agent.save(model)
 
-def calculate_reward(old_state, new_state):
-    """
-    Calculate the reward based on the old and new state.
-    A simple reward function could be based on the reduction of waiting times.
-    """
-    old_waiting_time = sum(old_state)
-    new_waiting_time = sum(new_state)
-    reward = old_waiting_time - new_waiting_time  # Reward is positive if waiting time is reduced
-    return reward
+        traci.close()
+        sys.stdout.flush()
+        if not train:
+            break
+    if train:
+        plt.save_plot(total_waiting_times, model)
 
 
 if __name__ == "__main__":
-    run_simulation()
+    options = pars.get_options()
+    model = options.model_name
+    train = options.train
+    epochs = options.epochs
+    steps = options.steps
+    run_simulation(train=train, model=model, epochs=epochs, steps=steps)
