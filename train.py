@@ -95,7 +95,7 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
                     if train:
                         agent.learn(junction_number)
                 else:
-                    traffic_lights_time[junction_number] -= 1
+                    traffic_lights_time[junction] -= 1
             step += 1
         print("total waiting time: ", total_time)
         total_waiting_times.append(total_time)

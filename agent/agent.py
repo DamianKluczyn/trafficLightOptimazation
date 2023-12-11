@@ -26,14 +26,13 @@ class Agent:
         self.iter_counter = 0  # iteration counter
         self.memory = self.init_memory(junctions)  # initializing memory
 
-        self.Q_eval = Model(self.lr, self.input_dims, self.fc1_dims, self.fc2_dims,
-                            self.n_actions)  # neural network model
+        self.Q_eval = Model(self.lr, self.input_dims, self.fc1_dims, self.fc2_dims, self.n_actions)  # neural network model
 
     def init_memory(self, junctions):
-        # Initialize memory
         memory = dict()
+        # Initialize memory
         for junction in junctions:
-            self.memory[junction] = {
+            memory[junction] = {
                 "state_memory": np.zeros((self.max_mem_size, self.input_dims), dtype=np.float32),
                 "new_state_memory": np.zeros((self.max_mem_size, self.input_dims), dtype=np.float32),
                 "reward_memory": np.zeros(self.max_mem_size, dtype=np.float32),
@@ -52,7 +51,7 @@ class Agent:
         self.memory[junction]['action_memory'][index] = action
         self.memory[junction]['reward_memory'][index] = reward
         self.memory[junction]['terminal_memory'][index] = done
-        self.memory[junction]['memory_counter'] += 1
+        self.memory[junction]['mem_counter'] += 1
 
     def choose_action(self, observation):
         # Choose an action based on the current policy
@@ -96,4 +95,4 @@ class Agent:
             self.memory[junction_number]["mem_counter"] = 0
 
     def save(self, model_name):
-        torch.save(self.Q_eval.state.dict(), f'models/{model_name}.bin')
+        torch.save(self.Q_eval.state_dict(), f'models/{model_name}.bin')

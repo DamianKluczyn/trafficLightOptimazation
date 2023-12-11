@@ -13,7 +13,7 @@ def get_options():
     optParser.add_option(
         "--train",
         action='store_true',
-        default=False,
+        default=True,
         help="training or testing",
     )
     optParser.add_option(
