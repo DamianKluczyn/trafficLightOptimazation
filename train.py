@@ -17,12 +17,6 @@ else:
     sys.exit("Please declare the 'SUMO_HOME' environment variable.")
 
 
-last_action_time = 0  # Time when the last action (light change) was taken
-current_phase = 0     # Current phase of traffic lights
-yellow_phase = {...}  # Dictionary mapping each phase to its corresponding yellow phase
-all_phases = {...}    # Dictionary of all traffic light phases including yellow
-
-
 def run_simulation(train=True, model="model", epochs=100, steps=1000):
     """
     Main function to run the SUMO simulation and train the agent.

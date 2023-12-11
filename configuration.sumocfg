@@ -3,11 +3,11 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
     <input>
         <net-file value="maps/map1.net.xml"/>
-        <route-files value="maps/routes.rou.xml"/>
+        <route-files value="maps/map1.rou.xml"/>
     </input>
     <time>
         <begin value="0"/>
-        <end value="200"/>
+        <end value="2000"/>
     </time>
 
     <report>
