@@ -27,7 +27,7 @@ def get_options():
         "-s",
         dest='steps',
         type='int',
-        default=1000,
+        default=2000,
         help="Number of steps",
     )
     options, args = optParser.parse_args()

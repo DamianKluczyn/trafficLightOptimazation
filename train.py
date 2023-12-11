@@ -27,9 +27,10 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
     # Initialize the agent
     all_junctions = traci.trafficlight.getIDList()
     junction_numbers = list(range(len(all_junctions)))
-    agent = Agent(gamma=0.99, epsilon=0.0, lr=0.001, input_dims=8, fc1_dims=256, fc2_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
+    agent = Agent(gamma=0.5, epsilon=1.0, lr=0.001, input_dims=8, fc1_dims=256, fc2_dims=256, fc3_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
     total_waiting_times = list()  # List to store total waiting time for each episode
     best_time = np.inf
+    best_epoch = -1
 
     # Main loop for training
     if not train:
@@ -50,11 +51,16 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
             ["rrrrYYYYrrrrrrrr", "rrrrGGGGrrrrrrrr"],
             ["rrrrrrrrYYYYrrrr", "rrrrrrrrGGGGrrrr"],
             ["rrrrrrrrrrrrYYYY", "rrrrrrrrrrrrGGGG"],
+            ["YYYYrrrrYYYYrrrr", "GGGGrrrrGGGGrrrr"],
+            ["rrrrYYYYrrrrYYYY", "rrrrGGGGrrrrGGGG"],
+            ["YYYYYYYYrrrrrrrr", "GGGGGGGGrrrrrrrr"],
+            ["rrrrrrrrYYYYYYYY", "rrrrrrrrGGGGGGGG"],
+            ["rrrrYYYYYYYYrrrr", "rrrrGGGGGGGGrrrr"],
         ]
 
         step = 0
         total_time = 0
-        min_duration = 5
+        min_duration = 3
         traffic_lights_time = dict()
         prev_wait_time = dict()
         prev_vehicle_per_lane = dict()
@@ -87,10 +93,10 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
                     # Select new action
                     lane = agent.choose_action(state_)
                     prev_action[junction_number] = lane
-                    phase_duration(junction, 6, select_lane[lane][0])
-                    phase_duration(junction, min_duration + 10, select_lane[lane][1])
+                    phase_duration(junction, 3, select_lane[lane][0])
+                    phase_duration(junction, min_duration + 7, select_lane[lane][1])
 
-                    traffic_lights_time[junction] = min_duration + 10
+                    traffic_lights_time[junction] = min_duration + 7
 
                     if train:
                         agent.learn(junction_number)
@@ -102,6 +108,7 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
 
         if total_time < best_time:
             best_time = total_time
+            best_epoch = episode
             if train:
                 agent.save(model)
 
@@ -109,7 +116,11 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
         sys.stdout.flush()
         if not train:
             break
+
     if train:
+        with open("simulation_results.txt", "a") as file:
+            file.write(f"\nSmallest waiting time: {best_time} occurred at epoch: {best_epoch} for model: {model}")
+        print(f"Smallest waiting time: {best_time} occurred at epoch: {best_epoch}")
         plt.save_plot(total_waiting_times, model)
 
 
@@ -120,3 +131,5 @@ if __name__ == "__main__":
     epochs = options.epochs
     steps = options.steps
     run_simulation(train=train, model=model, epochs=epochs, steps=steps)
+
+    input('Press Enter to exit...')

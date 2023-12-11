@@ -1,19 +1,18 @@
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim as optim
 from agent.model import Model
 
 
 class Agent:
-    def __init__(self, gamma, epsilon, lr, input_dims, fc1_dims, fc2_dims, batch_size, n_actions, junctions,
-                 max_mem_size=100000, eps_dec=5e-4, eps_end=0.01):
+    def __init__(self, gamma, epsilon, lr, input_dims, fc1_dims, fc2_dims, fc3_dims, batch_size, n_actions, junctions,
+                 max_mem_size=100000, eps_dec=1e-3, eps_end=0.01):
         self.gamma = gamma  # discount factor
         self.epsilon = epsilon  # exploration rate
         self.lr = lr  # learning rate
         self.input_dims = input_dims  # input dimensions
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
+        self.fc3_dims = fc3_dims
         self.batch_size = batch_size  # batch size
         self.n_actions = n_actions  # number of actions
         self.junctions = junctions  # junctions ids
@@ -26,7 +25,7 @@ class Agent:
         self.iter_counter = 0  # iteration counter
         self.memory = self.init_memory(junctions)  # initializing memory
 
-        self.Q_eval = Model(self.lr, self.input_dims, self.fc1_dims, self.fc2_dims, self.n_actions)  # neural network model
+        self.Q_eval = Model(self.lr, self.input_dims, self.fc1_dims, self.fc2_dims, self.fc3_dims, self.n_actions)  # neural network model
 
     def init_memory(self, junctions):
         memory = dict()
