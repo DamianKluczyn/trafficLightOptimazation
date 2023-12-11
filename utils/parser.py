@@ -7,7 +7,7 @@ def get_options():
         "-m",
         dest='model_name',
         type='string',
-        default="model",
+        default="model_map1",
         help="name of model",
     )
     optParser.add_option(
