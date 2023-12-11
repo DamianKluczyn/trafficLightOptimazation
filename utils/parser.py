@@ -13,21 +13,21 @@ def get_options():
     optParser.add_option(
         "--train",
         action='store_true',
-        default=True,
+        default=False,
         help="training or testing",
     )
     optParser.add_option(
         "-e",
         dest='epochs',
         type='int',
-        default=50,
+        default=100,
         help="Number of epochs",
     )
     optParser.add_option(
         "-s",
         dest='steps',
         type='int',
-        default=500,
+        default=1000,
         help="Number of steps",
     )
     options, args = optParser.parse_args()
