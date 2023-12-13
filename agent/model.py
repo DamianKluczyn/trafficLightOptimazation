@@ -7,6 +7,7 @@ import torch.optim as optim
 class Model(nn.Module):
     def __init__(self, lr, input_dims, fc1_dims, fc2_dims, fc3_dims, n_actions):
         super(Model, self).__init__()
+        # Learning rate for the optimizer
         self.lr = lr
         # Define the first fully connected layer
         self.fc1 = nn.Linear(input_dims, fc1_dims)
@@ -18,13 +19,15 @@ class Model(nn.Module):
         self.fc4 = nn.Linear(fc3_dims, n_actions)
         # Define optimizer
         self.optimizer = optim.Adam(self.parameters(), lr=self.lr)
-        # Define loss function
+        # Define loss function, Mean Squared Error
         self.loss = nn.MSELoss()
-        # Define the device
+        # Determine to use GPU (cuda) or CPU
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.to(self.device)
 
+    # Forward method defines how the model processes input data
     def forward(self, state):
+        # Apply ReLU activation function after each fully connected layer
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
