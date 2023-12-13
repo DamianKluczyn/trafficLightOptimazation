@@ -1,6 +1,7 @@
 import optparse
 
 
+# Parses command-line options for the simulation
 def get_options():
     optParser = optparse.OptionParser()
     optParser.add_option(
