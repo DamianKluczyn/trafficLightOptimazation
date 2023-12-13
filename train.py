@@ -26,7 +26,7 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
     # Initialize the agent
     all_junctions = traci.trafficlight.getIDList()
     junction_numbers = list(range(len(all_junctions)))
-    agent = Agent(gamma=0.5, epsilon=1.0, lr=0.001, input_dims=8, fc1_dims=256, fc2_dims=256, fc3_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
+    agent = Agent(gamma=0.6, epsilon=1.0, lr=0.001, input_dims=8, fc1_dims=256, fc2_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
     # Store total waiting time for each episode
     total_waiting_times = list()
     best_time = np.inf
@@ -57,11 +57,11 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
             ["rrrrYYYYrrrrrrrr", "rrrrGGGGrrrrrrrr"],
             ["rrrrrrrrYYYYrrrr", "rrrrrrrrGGGGrrrr"],
             ["rrrrrrrrrrrrYYYY", "rrrrrrrrrrrrGGGG"],
-            ["YYYYrrrrYYYYrrrr", "GGGGrrrrGGGGrrrr"],
-            ["rrrrYYYYrrrrYYYY", "rrrrGGGGrrrrGGGG"],
-            ["YYYYYYYYrrrrrrrr", "GGGGGGGGrrrrrrrr"],
-            ["rrrrrrrrYYYYYYYY", "rrrrrrrrGGGGGGGG"],
-            ["rrrrYYYYYYYYrrrr", "rrrrGGGGGGGGrrrr"],
+            # ["YYYYrrrrYYYYrrrr", "GGGGrrrrGGGGrrrr"],
+            # ["rrrrYYYYrrrrYYYY", "rrrrGGGGrrrrGGGG"],
+            # ["YYYYYYYYrrrrrrrr", "GGGGGGGGrrrrrrrr"],
+            # ["rrrrrrrrYYYYYYYY", "rrrrrrrrGGGGGGGG"],
+            # ["rrrrYYYYYYYYrrrr", "rrrrGGGGGGGGrrrr"],
         ]
 
         # Variables for managing simulation steps and traffic light time
