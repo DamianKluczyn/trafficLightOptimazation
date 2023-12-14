@@ -26,7 +26,7 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
     # Initialize the agent
     all_junctions = traci.trafficlight.getIDList()
     junction_numbers = list(range(len(all_junctions)))
-    agent = Agent(gamma=0.6, epsilon=1.0, lr=0.001, input_dims=8, fc1_dims=256, fc2_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
+    agent = Agent(gamma=0.99, epsilon=1.0, lr=0.001, input_dims=8, fc1_dims=256, fc2_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
     # Store total waiting time for each episode
     total_waiting_times = list()
     best_time = np.inf
@@ -34,7 +34,9 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
 
     # If training flag is set to False, load pre-trained model
     if not train:
-        agent.Q_eval.load_state_dict(torch.load(f'models/{model}.bin', map_location=agent.Q_eval.device))
+        checkpoint = torch.load(f'models/{model}.bin', map_location=agent.Q_eval.device)
+        agent.Q_eval.load_state_dict(checkpoint['state_dict'])
+        best_epoch = checkpoint.get('best_epoch', 0)
 
     # Print the device being used by the agent's model
     print(agent.Q_eval.device)
@@ -57,11 +59,11 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
             ["rrrrYYYYrrrrrrrr", "rrrrGGGGrrrrrrrr"],
             ["rrrrrrrrYYYYrrrr", "rrrrrrrrGGGGrrrr"],
             ["rrrrrrrrrrrrYYYY", "rrrrrrrrrrrrGGGG"],
-            # ["YYYYrrrrYYYYrrrr", "GGGGrrrrGGGGrrrr"],
-            # ["rrrrYYYYrrrrYYYY", "rrrrGGGGrrrrGGGG"],
-            # ["YYYYYYYYrrrrrrrr", "GGGGGGGGrrrrrrrr"],
-            # ["rrrrrrrrYYYYYYYY", "rrrrrrrrGGGGGGGG"],
-            # ["rrrrYYYYYYYYrrrr", "rrrrGGGGGGGGrrrr"],
+            ["YYYYrrrrYYYYrrrr", "GGGGrrrrGGGGrrrr"],
+            ["rrrrYYYYrrrrYYYY", "rrrrGGGGrrrrGGGG"],
+            ["YYYYYYYYrrrrrrrr", "GGGGGGGGrrrrrrrr"],
+            ["rrrrrrrrYYYYYYYY", "rrrrrrrrGGGGGGGG"],
+            ["rrrrYYYYYYYYrrrr", "rrrrGGGGGGGGrrrr"],
         ]
 
         # Variables for managing simulation steps and traffic light time
@@ -121,7 +123,7 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
             best_time = total_time
             best_epoch = episode
             if train:
-                agent.save(model)
+                agent.save(model, best_epoch)
 
         # Close the SUMO simulation
         traci.close()

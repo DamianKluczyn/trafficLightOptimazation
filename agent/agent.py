@@ -5,7 +5,7 @@ from agent.model import Model
 
 class Agent:
     def __init__(self, gamma, epsilon, lr, input_dims, fc1_dims, fc2_dims, batch_size, n_actions, junctions,
-                 max_mem_size=100000, eps_dec=1e-3, eps_end=0.01):
+                 max_mem_size=100000, eps_dec=5e-4, eps_end=0.001):
         # Discount factor for future reward
         self.gamma = gamma
         # Exploration rate for choosing random actions.
@@ -105,5 +105,9 @@ class Agent:
             self.memory[junction_number]["mem_counter"] = 0
 
     # Save the state of the neural network model
-    def save(self, model_name):
-        torch.save(self.Q_eval.state_dict(), f'models/{model_name}.bin')
+    def save(self, model_name, best_epoch):
+        torch.save({
+            'state_dict': self.Q_eval.state_dict(),
+            'best_epoch': best_epoch
+        }, f'models/{model_name}.bin')
+
