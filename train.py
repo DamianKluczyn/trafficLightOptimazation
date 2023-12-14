@@ -26,7 +26,7 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
     # Initialize the agent
     all_junctions = traci.trafficlight.getIDList()
     junction_numbers = list(range(len(all_junctions)))
-    agent = Agent(gamma=0.99, epsilon=1.0, lr=0.001, input_dims=8, fc1_dims=256, fc2_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
+    agent = Agent(gamma=0.6, epsilon=1.0, lr=0.01, input_dims=8, fc1_dims=256, fc2_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
     # Store total waiting time for each episode
     total_waiting_times = list()
     best_time = np.inf
@@ -34,8 +34,12 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
 
     # If training flag is set to False, load pre-trained model
     if not train:
-        checkpoint = torch.load(f'models/{model}.bin', map_location=agent.Q_eval.device)
+        checkpoint = torch.load(f'models/{model}.pt', map_location=agent.Q_eval.device)
         agent.Q_eval.load_state_dict(checkpoint['state_dict'])
+        agent.Q_eval.eval()
+        agent.epsilon = checkpoint.get('epsilon', 1.0)
+        agent.gamma = checkpoint.get('gamma', 0.99)
+        agent.eps_dec = checkpoint.get('eps_dec', 5e-4)
         best_epoch = checkpoint.get('best_epoch', 0)
 
     # Print the device being used by the agent's model
@@ -130,8 +134,8 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
         sys.stdout.flush()
 
         # Exit the loop if not training
-        if not train:
-            break
+        # if not train:
+        #     break
 
     # Save the plot and the results if training
     if train:
