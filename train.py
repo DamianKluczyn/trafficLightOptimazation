@@ -8,6 +8,7 @@ from utils.sumo_utils import get_vehicle_numbers, get_waiting_time, phase_durati
 from agent.agent import Agent
 import utils.save_plot as plt
 import utils.parser as pars
+import utils.variables as var
 
 
 # Check for the SUM_HOME environment variable
@@ -19,14 +20,23 @@ else:
 
 
 # Main function to run the SUMO simulation and train the agent
-def run_simulation(train=True, model="model", epochs=100, steps=1000):
+def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps):
     # Initialize SUMO with configuration file
     traci.start([checkBinary("sumo"), "-c", "configuration.sumocfg", "--tripinfo-output", "maps/tripinfo.xml"])
 
     # Initialize the agent
     all_junctions = traci.trafficlight.getIDList()
     junction_numbers = list(range(len(all_junctions)))
-    agent = Agent(gamma=0.6, epsilon=1.0, lr=0.01, input_dims=8, fc1_dims=256, fc2_dims=256, batch_size=1024, n_actions=4, junctions=junction_numbers)
+    agent = Agent(
+        gamma=var.gamma,
+        epsilon=var.epsilon,
+        lr=var.lr,
+        input_dims=var.input_dims,
+        fc1_dims=var.fc1_dims,
+        fc2_dims=var.fc2_dims,
+        batch_size=var.batch_size,
+        n_actions=var.n_actions,
+        junctions=junction_numbers)
     # Store total waiting time for each episode
     total_waiting_times = list()
     best_time = np.inf
@@ -37,9 +47,9 @@ def run_simulation(train=True, model="model", epochs=100, steps=1000):
         checkpoint = torch.load(f'models/{model}.pt', map_location=agent.Q_eval.device)
         agent.Q_eval.load_state_dict(checkpoint['state_dict'])
         agent.Q_eval.eval()
-        agent.epsilon = checkpoint.get('epsilon', 1.0)
-        agent.gamma = checkpoint.get('gamma', 0.99)
-        agent.eps_dec = checkpoint.get('eps_dec', 5e-4)
+        agent.epsilon = checkpoint.get('epsilon', var.epsilon)
+        agent.gamma = checkpoint.get('gamma', var.gamma)
+        agent.eps_dec = checkpoint.get('eps_dec', var.eps_dec)
         best_epoch = checkpoint.get('best_epoch', 0)
 
     # Print the device being used by the agent's model

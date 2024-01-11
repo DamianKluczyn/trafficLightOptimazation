@@ -1,11 +1,12 @@
 import numpy as np
 import torch
 from agent.model import Model
+import utils.variables as var
 
 
 class Agent:
     def __init__(self, gamma, epsilon, lr, input_dims, fc1_dims, fc2_dims, batch_size, n_actions, junctions,
-                 max_mem_size=100000, eps_dec=1e-3, eps_end=0.01):
+                 max_mem_size=100000, eps_dec=var.eps_dec, eps_end=var.eps_end):
         # Discount factor for future reward
         self.gamma = gamma
         # Exploration rate for choosing random actions.
