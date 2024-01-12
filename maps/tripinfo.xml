@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2023-12-14 23:19:37 by Eclipse SUMO sumo Version 1.18.0
+<!-- generated on 2024-01-12 02:32:42 by Eclipse SUMO sumo Version 1.18.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
         <net-file value="maps/map1.net.xml"/>
-        <route-files value="maps/map1.rou.xml"/>
+        <route-files value="maps/training_map.rou.xml"/>
     </input>
 
     <output>
@@ -23,7 +23,7 @@
     </report>
 
     <traci_server>
-        <remote-port value="58916"/>
+        <remote-port value="49769"/>
     </traci_server>
 
 </configuration>

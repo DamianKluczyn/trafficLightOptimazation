@@ -33,3 +33,4 @@ softplus:
 
 Smallest waiting time: 251178.0 occurred at epoch: 58 for model: model_2
 Smallest waiting time: 174748.0 occurred at epoch: 40 for model: model_16
+Smallest waiting time: 240180.0 occurred at epoch: 46 for model: model_1

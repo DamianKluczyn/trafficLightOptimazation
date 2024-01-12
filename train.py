@@ -30,7 +30,7 @@ def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps
     agent = Agent(
         gamma=var.gamma,
         epsilon=var.epsilon,
-        lr=var.lr,
+        alpha=var.alpha,
         input_dims=var.input_dims,
         fc1_dims=var.fc1_dims,
         fc2_dims=var.fc2_dims,
@@ -73,11 +73,12 @@ def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps
             ["rrrrYYYYrrrrrrrr", "rrrrGGGGrrrrrrrr"],
             ["rrrrrrrrYYYYrrrr", "rrrrrrrrGGGGrrrr"],
             ["rrrrrrrrrrrrYYYY", "rrrrrrrrrrrrGGGG"],
-            ["YYYYrrrrYYYYrrrr", "GGGGrrrrGGGGrrrr"],
-            ["rrrrYYYYrrrrYYYY", "rrrrGGGGrrrrGGGG"],
             ["YYYYYYYYrrrrrrrr", "GGGGGGGGrrrrrrrr"],
-            ["rrrrrrrrYYYYYYYY", "rrrrrrrrGGGGGGGG"],
+            ["YYYYrrrrYYYYrrrr", "GGGGrrrrGGGGrrrr"],
+            ["YYYYrrrrrrrrYYYY", "GGGGrrrrrrrrGGGG"],
             ["rrrrYYYYYYYYrrrr", "rrrrGGGGGGGGrrrr"],
+            ["rrrrYYYYrrrrYYYY", "rrrrGGGGrrrrGGGG"],
+            ["rrrrrrrrYYYYYYYY", "rrrrrrrrGGGGGGGG"],
         ]
 
         # Variables for managing simulation steps and traffic light time

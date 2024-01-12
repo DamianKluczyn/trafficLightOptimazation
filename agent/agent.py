@@ -5,13 +5,13 @@ import utils.variables as var
 
 
 class Agent:
-    def __init__(self, gamma, epsilon, lr, input_dims, fc1_dims, fc2_dims, batch_size, n_actions, junctions,
+    def __init__(self, gamma, epsilon, alpha, input_dims, fc1_dims, fc2_dims, batch_size, n_actions, junctions,
                  max_mem_size=100000, eps_dec=var.eps_dec, eps_end=var.eps_end):
         # Discount factor for future reward
         self.gamma = gamma
         # Exploration rate for choosing random actions.
         self.epsilon = epsilon
-        self.lr = lr
+        self.alpha = alpha
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
@@ -32,7 +32,7 @@ class Agent:
         # Initialize memory for each junction
         self.memory = self.init_memory(junctions)
 
-        self.Q_eval = Model(self.lr, self.input_dims, self.fc1_dims, self.fc2_dims, self.n_actions)
+        self.Q_eval = Model(self.alpha, self.input_dims, self.fc1_dims, self.fc2_dims, self.n_actions)
 
     # Initialize memory for storing experience for each junction
     def init_memory(self, junctions):

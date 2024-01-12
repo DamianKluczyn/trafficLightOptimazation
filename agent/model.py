@@ -5,10 +5,10 @@ import torch.optim as optim
 
 
 class Model(nn.Module):
-    def __init__(self, lr, input_dims, fc1_dims, fc2_dims, n_actions):
+    def __init__(self, alpha, input_dims, fc1_dims, fc2_dims, n_actions):
         super(Model, self).__init__()
         # Learning rate for the optimizer
-        self.lr = lr
+        self.alpha = alpha
         # Define the first fully connected layer
         self.fc1 = nn.Linear(input_dims, fc1_dims)
         # Define the second fully connected layer
@@ -16,7 +16,7 @@ class Model(nn.Module):
         # Define the final layer that will output the action values
         self.fc3 = nn.Linear(fc2_dims, n_actions)
         # Define optimizer
-        self.optimizer = optim.Adam(self.parameters(), lr=self.lr)
+        self.optimizer = optim.Adam(self.parameters(), lr=self.alpha)
         # Define loss function, Mean Squared Error
         self.loss = nn.MSELoss()
         # Determine to use GPU (cuda) or CPU
