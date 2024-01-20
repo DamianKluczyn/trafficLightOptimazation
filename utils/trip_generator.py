@@ -8,7 +8,7 @@ def generate_training_strategies():
     routes = ["-E0 E1", "-E0 E2", "-E0 E3", "-E1 E0", "-E1 E2", "-E1 E3", "-E2 E0", "-E2 E1", "-E2 E3", "-E3 E0", "-E3 E1", "-E3 E2"]
 
     # Strategia pasywna
-    for depart_time in range(0, 501, 3):
+    for depart_time in range(0, 601, 3):
         route = routes[random.randrange(0,11)]
         vehicles.append(f'''
             <vehicle id="{vehicle_id}" depart="{depart_time}.00">
@@ -23,7 +23,7 @@ def generate_training_strategies():
         vehicle_id += 1
 
     # Strategia agresywna
-    for depart_time in range(501, 1001, 1):
+    for depart_time in range(601, 1201, 1):
         route = routes[random.randrange(0,11)] if vehicle_id % 3 == 0 else "-E0 E2"
         vehicles.append(f'''
             <vehicle id="{vehicle_id}" depart="{depart_time}.00">
@@ -38,7 +38,7 @@ def generate_training_strategies():
         vehicle_id += 1
 
     # Strategia mieszana
-    for depart_time in range(1001, 1600, 2):
+    for depart_time in range(1201, 1900, 2):
         route = routes[random.randrange(0,11)]
         vehicles.append(f'''
             <vehicle id="{vehicle_id}" depart="{depart_time}.00">
@@ -62,7 +62,7 @@ def generate_passive_strategies():
     routes = ["-E0 E1", "-E0 E2", "-E0 E3", "-E1 E0", "-E1 E2", "-E1 E3", "-E2 E0", "-E2 E1", "-E2 E3", "-E3 E0",
               "-E3 E1", "-E3 E2"]
 
-    for depart_time in range(0, 1500, 3):
+    for depart_time in range(0, 1980, 3):
         route = routes[random.randrange(0, 11)]
         vehicles.append(f'''
             <vehicle id="{vehicle_id}" depart="{depart_time}.00">
@@ -86,7 +86,7 @@ def generate_aggressive_strategies():
     routes = ["-E0 E1", "-E0 E2", "-E0 E3", "-E1 E0", "-E1 E2", "-E1 E3", "-E2 E0", "-E2 E1", "-E2 E3", "-E3 E0",
               "-E3 E1", "-E3 E2"]
 
-    for depart_time in range(0, 1000, 1):
+    for depart_time in range(0, 1900, 1):
         route = routes[random.randrange(0, 11)] if vehicle_id % 3 == 0 else "-E0 E2"
         vehicles.append(f'''
             <vehicle id="{vehicle_id}" depart="{depart_time}.00">
@@ -110,7 +110,7 @@ def generate_mixed_strategies():
     routes = ["-E0 E1", "-E0 E2", "-E0 E3", "-E1 E0", "-E1 E2", "-E1 E3", "-E2 E0", "-E2 E1", "-E2 E3", "-E3 E0",
               "-E3 E1", "-E3 E2"]
 
-    for depart_time in range(0, 1600, 2):
+    for depart_time in range(0, 1900, 2):
         route = routes[random.randrange(0, 11)]
         vehicles.append(f'''
             <vehicle id="{vehicle_id}" depart="{depart_time}.00">

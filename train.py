@@ -20,7 +20,7 @@ else:
 
 
 # Main function to run the SUMO simulation and train the agent
-def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps):
+def run_simulation(train=False, model="model", epochs=var.epochs, steps=var.steps):
     # Initialize SUMO with configuration file
     traci.start([checkBinary("sumo"), "-c", "configuration.sumocfg", "--tripinfo-output", "maps/tripinfo.xml"])
 
@@ -42,6 +42,9 @@ def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps
     best_time = np.inf
     best_epoch = -1
 
+    # Variables for evaltuation mode
+    avg_waiting_times_per_step = [] if not train else None
+
     # If training flag is set to False, load pre-trained model
     if not train:
         checkpoint = torch.load(f'models/{model}.pt', map_location=agent.Q_eval.device)
@@ -51,6 +54,7 @@ def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps
         agent.gamma = checkpoint.get('gamma', var.gamma)
         agent.eps_dec = checkpoint.get('eps_dec', var.eps_dec)
         best_epoch = checkpoint.get('best_epoch', 0)
+        print("best epoch: ", best_epoch)
 
     # Print the device being used by the agent's model
     print(agent.Q_eval.device)
@@ -63,9 +67,7 @@ def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps
             traci.start([checkBinary("sumo"), "-c", "configuration.sumocfg", "--tripinfo-output", "tripinfo.xml"])
         else:
             # Start SUMO with GUI for evaluation
-            traci.start([checkBinary("sumo-gui"), "-c", "configuration.sumocfg", "--tripinfo-output", "tripinfo.xml"])
-
-        print(f'epoch: {episode}')
+            traci.start([checkBinary("sumo-gui"), "-c", "configuration.sumocfg", "--tripinfo-output", "tripinfo.xml"]) #sumo-gui
 
         # Define traffic lights phases
         select_lane = [
@@ -129,10 +131,17 @@ def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps
                         agent.learn(junction_number)
                 else:
                     traffic_lights_time[junction] -= 1
+            if not train:
+
+                avg_waiting_time = total_time / (step + 1)
+                avg_waiting_times_per_step.append(avg_waiting_time)
             step += 1
         print("total waiting time: ", total_time)
-        total_waiting_times.append(total_time)
 
+        if total_time < 10:
+            continue
+
+        total_waiting_times.append(total_time)
         # Check for best time and save model if necessary
         if total_time < best_time:
             best_time = total_time
@@ -145,8 +154,8 @@ def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps
         sys.stdout.flush()
 
         # Exit the loop if not training
-        # if not train:
-        #     break
+        if not train:
+             break
 
     # Save the plot and the results if training
     if train:
@@ -154,6 +163,13 @@ def run_simulation(train=True, model="model", epochs=var.epochs, steps=var.steps
             file.write(f"\nSmallest waiting time: {best_time} occurred at epoch: {best_epoch} for model: {model}")
         print(f"Smallest waiting time: {best_time} occurred at epoch: {best_epoch}")
         plt.save_plot(total_waiting_times, model)
+
+    # Save the plot and the results if evaluation
+    elif not train:
+        with open(f"evaluation_results_{model}.txt", "w") as file:
+            for step, avg_time in enumerate(avg_waiting_times_per_step):
+                file.write(f"Step {step}: Average Waiting Time = {avg_time}\n")
+        plt.save_evaluation_plot(avg_waiting_times_per_step, f"evaluation_{model}")
 
 
 # Parse command line arguments and run the simulation

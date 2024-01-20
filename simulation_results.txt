@@ -1,36 +1,38 @@
-Waiting time for base simulation: 151848.0
-eps 1.0, eps_dec 5e-4 gamma 0.99:
-1. Smallest waiting time: 171896.0 occurred at epoch: 82 for model: model_1
-2. Smallest waiting time: 195036.0 occurred at epoch: 59 for model: model_2
-eps 0.0, eps_dec 5e-4 gamma 0.99:
-3. Smallest waiting time: 1923788.0 occurred at epoch: 96 for model: model_3
-4. Smallest waiting time: 196346.0 occurred at epoch: 95 for model: model_4
-eps 1.0, eps_dec 5e-5 gamma 0.99:
-5. Smallest waiting time: 454012.0 occurred at epoch: 63 for model: model_5
-6. Smallest waiting time: 472892.0 occurred at epoch: 74 for model: model_6
-eps 1.0, eps_dec 5e-3 gamma 0.99:
-7. Smallest waiting time: 1131562.0 occurred at epoch: 0 for model: model_7
-8. Smallest waiting time: 230770.0 occurred at epoch: 71 for model: model_8
-eps 1.0, eps_dec 5e-4 gamma 0.5:
-9. Smallest waiting time: 154998.0 occurred at epoch: 56 for model: model_9
-10. Smallest waiting time: 169136.0 occurred at epoch: 45 for model: model_10
-eps 1.0, eps_dec 5e-4 gamma 0.2:
-11. Smallest waiting time: 177318.0 occurred at epoch: 99 for model: model_11
-12. Smallest waiting time: 167074.0 occurred at epoch: 99 for model: model_12
-eps 1.0 eps_dec 1e-3 gamma 0.99:
-13. Smallest waiting time: 198794.0 occurred at epoch: 87 for model: model_13
-14. Smallest waiting time: 189674.0 occurred at epoch: 97 for model: model_14
-eps 1.0 eps_dec 1e-3 gamma 0.6:
-15. Smallest waiting time: 149268.0 occurred at epoch: 46 for model: model_15
-16. Smallest waiting time: 176874.0 occurred at epoch: 59 for model: model_16
-additional layer:
-17. Smallest waiting time: 164996.0 occurred at epoch: 44 for model: model_17
-elu:
-18. Smallest waiting time: 167622.0 occurred at epoch: 32 for model: model_18
-softplus:
-19. Smallest waiting time: 173830.0 occurred at epoch: 56 for model: model_19
-
-
-Smallest waiting time: 251178.0 occurred at epoch: 58 for model: model_2
-Smallest waiting time: 174748.0 occurred at epoch: 40 for model: model_16
-Smallest waiting time: 240180.0 occurred at epoch: 46 for model: model_1
+Smallest waiting time: 41264.0 occurred at epoch: 73 for model: model_final
+Waiting time for base simulation: 123064.0
+Waiting time for base simulation: 108590.0
+Waiting time for base simulation: 118038.0
+Waiting time for base simulation: 138910.0
+Waiting time for base simulation: 118138.0
+Waiting time for base simulation: 112380.0
+Waiting time for base simulation: 109886.0
+Waiting time for base simulation: 116888.0
+Waiting time for base simulation: 116888.0
+Waiting time for base simulation: 124384.0
+Waiting time for base simulation: 613170.0
+Waiting time for base simulation: 798842.0
+Waiting time for base simulation: 995490.0
+Waiting time for base simulation: 1750322.0
+Waiting time for base simulation: 372826.0
+Waiting time for base simulation: 180704.0
+Waiting time for base simulation: 194450.0
+Waiting time for base simulation: 177924.0
+Waiting time for base simulation: 183618.0
+Waiting time for base simulation: 181722.0
+Waiting time for base simulation: 111452.0
+Waiting time for base simulation: 228834.0
+Waiting time for base simulation: 259460.0
+Waiting time for base simulation: 210416.0
+Waiting time for base simulation: 256186.0
+Waiting time for base simulation: 240056.0
+Waiting time for base simulation: 2916378.0
+Waiting time for base simulation: 2916378.0
+Waiting time for base simulation: 3121488.0
+Waiting time for base simulation: 3776040.0
+Waiting time for base simulation: 3205344.0
+Waiting time for base simulation: 4010838.0
+Waiting time for base simulation: 359388.0
+Waiting time for base simulation: 373258.0
+Waiting time for base simulation: 368380.0
+Waiting time for base simulation: 362224.0
+Waiting time for base simulation: 381638.0
